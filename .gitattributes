@@ -1,0 +1,13 @@
+# Treat deck source as text with normalized LF
+*.html  text eol=lf
+*.js    text eol=lf
+*.css   text eol=lf
+*.md    text eol=lf
+
+# Binary assets — never touch
+*.woff2 binary
+*.mp4   binary
+*.gif   binary
+*.png   binary
+*.jpg   binary
+*.svg   binary

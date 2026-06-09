@@ -8,3 +8,6 @@ project-docs/
 # OS noise
 Thumbs.db
 .DS_Store
+
+# Build pipeline scratch (downloaded/extracted handoff)
+.work/
