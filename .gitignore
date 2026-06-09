@@ -1,0 +1,10 @@
+# Local-only handoff bundle (re-fetch from Claude Design when needed; link expires)
+handoff.tar.gz
+_handoff_extract/
+
+# Junction to the OneDrive project documents folder (local context only)
+project-docs/
+
+# OS noise
+Thumbs.db
+.DS_Store
