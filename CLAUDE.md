@@ -49,10 +49,11 @@ node build.mjs --reprocess --publish "Update deck to v16"
 ```
 
 **Standard processing steps — confirmed, applied automatically to EVERY fetched version**
-(both user-approved 2026-06-10; keep them on for all upcoming deck versions unless told otherwise):
-1. **embed-fonts** — injects `<link rel="stylesheet" href="fonts.css">` before `</head>` (idempotent).
-2. **nav-toggle** — injects `<script src="deck-controls.js"></script>` before `</body>` (idempotent).
-3. *(future UI patches go here as discrete, idempotent steps.)*
+(user-approved 2026-06-10; keep them on for all upcoming deck versions unless told otherwise):
+1. **stamp-version** — injects `<meta name="deck-version">`/`deck-source`/`deck-built` before `</head>` (see Version tracking).
+2. **embed-fonts** — injects `<link rel="stylesheet" href="fonts.css">` before `</head>`.
+3. **nav-toggle** — injects `<script src="deck-controls.js"></script>` before `</body>`.
+4. *(future UI patches go here as discrete, idempotent steps.)*
 
 `build.mjs` re-applies all of these on every `--handoff`/`--reprocess` run, so a new version
 (v16, v17, …) is fetched and shipped with fonts + nav-toggle already in place — no manual redo.
@@ -101,6 +102,33 @@ project-docs/      (git-ignored junction) → OneDrive "SpatialTimber - Document
 `SpatialTimber - Documents/04_Publications and Presentations/03_ZukunftBau Projektetage 2026/`
 holds the design brief, asset bundle, and the Claude Design handoff history. The
 `project-docs/` junction points there for convenience during local work.
+
+## Version tracking — TWO axes
+
+A published build is identified by two independent versions:
+
+| Axis | What it is | How it changes |
+|---|---|---|
+| **`deckVersion`** (`v15`) | Claude Design deck **content** | auto from the handoff filename (highest `vN`) |
+| **`webVersion`** (`1.0.0`) | **our layer** here — processing steps + patch files (`fonts.css`, `deck-controls.js`) + build logic | **manual:** bump `WEB_VERSION` in `build.mjs` |
+
+This matters because the *same* deck `vN` can be republished with different local changes —
+`webVersion` is what distinguishes "v15 with just fonts" from "v15 with fonts + nav-toggle".
+
+**Bump `WEB_VERSION` (top of `build.mjs`) whenever you change this repo's processing/patch layer:**
+patch = fix/tweak to an existing patch · minor = new processing step / feature · major = rework.
+(Don't bump it for a pure deck-content update — that moves `deckVersion` instead.)
+
+Both are stamped on every build:
+- **`version.json`** (repo root) — `{ deckVersion, webVersion, sourceFile, builtAt, slides, assets, processing }`. Committed.
+- **`<meta name="deck-version">` / `web-version` / `deck-source` / `deck-built`** injected into `index.html`
+  (the `stamp-version` step) — the **live site self-reports**:
+  ```sh
+  curl -s https://bauhaus-infau.github.io/SpatialTimber-Web/version.json
+  curl -s https://bauhaus-infau.github.io/SpatialTimber-Web/ | grep -E 'deck-version|web-version'
+  ```
+
+No git tags (by choice).
 
 ## Navigator collapse control
 

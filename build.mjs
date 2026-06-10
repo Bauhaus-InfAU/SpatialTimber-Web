@@ -25,6 +25,13 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = dirname(fileURLToPath(import.meta.url));
 const WORK = join(ROOT, ".work");
+
+// Web-layer version — OUR changes here (processing steps, patch files like fonts.css /
+// deck-controls.js, build logic), independent of the Claude Design deck content version (vN).
+// BUMP THIS when you change anything in this repo's processing/patch layer:
+//   patch (x.x.+1) = fix/tweak to an existing patch; minor (x.+1.0) = new processing step /
+//   feature; major (+1.0.0) = a reworking. The deck's own vN is tracked separately.
+const WEB_VERSION = "1.0.0";
 const ASSETS = join(ROOT, "assets");
 const FONT_LINK = '<link rel="stylesheet" href="fonts.css">';
 
@@ -116,8 +123,20 @@ function pickDeck(projectDir) {
 // Standard steps below are CONFIRMED STANDING PROCESSING (user-approved 2026-06-10) and run
 // on every fetched deck version: embed-fonts + nav-toggle. Keep them applied to all upcoming
 // versions unless explicitly told to drop one. Each step is idempotent.
-function applyProcessing(html) {
+function applyProcessing(html, meta) {
   const applied = [];
+  // stamp-version: record the source deck version + build time so the live site
+  // self-reports what's deployed (queryable via curl/JS). Source HTML never
+  // carries these, so this injects fresh on every build.
+  if (!html.includes('name="deck-version"')) {
+    if (!html.includes("</head>")) die("deck HTML has no </head> to stamp version into");
+    const stamp = `  <meta name="deck-version" content="${meta.deckVersion}">\n` +
+                  `  <meta name="web-version" content="${meta.webVersion}">\n` +
+                  `  <meta name="deck-source" content="${meta.sourceFile}">\n` +
+                  `  <meta name="deck-built" content="${meta.builtAt}">\n`;
+    html = html.replace("</head>", `${stamp}</head>`);
+    applied.push("stamp-version");
+  }
   // embed fonts: link fonts.css before </head> (idempotent)
   if (!html.includes('href="fonts.css"')) {
     if (!html.includes("</head>")) die("deck HTML has no </head> to inject fonts into");
@@ -142,10 +161,13 @@ function refs(html) {
 function main() {
   const projectDir = resolveBundle();
   const deckPath = pickDeck(projectDir);
-  log(`• Deck version: ${deckPath.split(/[\\/]/).pop()}`);
+  const sourceFile = deckPath.split(/[\\/]/).pop();
+  const deckVersion = "v" + (sourceFile.match(/\bv(\d+)\b/)?.[1] ?? "?");
+  const builtAt = new Date().toISOString();
+  log(`• Deck version: ${deckVersion}  (${sourceFile})   ·   web v${WEB_VERSION}`);
 
   let html = readFileSync(deckPath, "utf8");
-  const { html: out, applied } = applyProcessing(html);
+  const { html: out, applied } = applyProcessing(html, { deckVersion, webVersion: WEB_VERSION, sourceFile, builtAt });
   writeFileSync(join(ROOT, "index.html"), out);
   log(`• Processing applied: ${applied.length ? applied.join(", ") : "(none — already current)"}`);
 
@@ -169,7 +191,17 @@ function main() {
 
   // verify
   const slideCount = (out.match(/<section/g) || []).length;
+
+  // stamp version.json (in-repo record of what's deployed)
+  const version = {
+    deckVersion, webVersion: WEB_VERSION, sourceFile, builtAt,
+    slides: slideCount, assets: used.length,
+    processing: applied,
+  };
+  writeFileSync(join(ROOT, "version.json"), JSON.stringify(version, null, 2) + "\n");
+
   log(`\n── summary ─────────────────────────────`);
+  log(`  deck version      : ${deckVersion}  ·  web v${WEB_VERSION}  (built ${builtAt.slice(0, 10)})`);
   log(`  slides (sections) : ${slideCount}`);
   log(`  assets referenced : ${used.length}  (${human(bytes)})`);
   log(`  deck-stage.js     : ok`);
