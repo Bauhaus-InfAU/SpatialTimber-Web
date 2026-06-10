@@ -48,10 +48,14 @@ python -m http.server 8000          # open http://localhost:8000/
 node build.mjs --reprocess --publish "Update deck to v16"
 ```
 
-What processing does (`applyProcessing()` in build.mjs):
+**Standard processing steps — confirmed, applied automatically to EVERY fetched version**
+(both user-approved 2026-06-10; keep them on for all upcoming deck versions unless told otherwise):
 1. **embed-fonts** — injects `<link rel="stylesheet" href="fonts.css">` before `</head>` (idempotent).
 2. **nav-toggle** — injects `<script src="deck-controls.js"></script>` before `</body>` (idempotent).
 3. *(future UI patches go here as discrete, idempotent steps.)*
+
+`build.mjs` re-applies all of these on every `--handoff`/`--reprocess` run, so a new version
+(v16, v17, …) is fetched and shipped with fonts + nav-toggle already in place — no manual redo.
 
 Each step is a self-contained repo file (`fonts.css`, `deck-controls.js`) + a one-line
 injection. To add a UI tweak: write the patch file, add an idempotent injection block in

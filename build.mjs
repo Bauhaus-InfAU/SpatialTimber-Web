@@ -113,6 +113,9 @@ function pickDeck(projectDir) {
 }
 
 // ---- 3. process: inject fonts (+ future UI patches) ----
+// Standard steps below are CONFIRMED STANDING PROCESSING (user-approved 2026-06-10) and run
+// on every fetched deck version: embed-fonts + nav-toggle. Keep them applied to all upcoming
+// versions unless explicitly told to drop one. Each step is idempotent.
 function applyProcessing(html) {
   const applied = [];
   // embed fonts: link fonts.css before </head> (idempotent)
