@@ -53,14 +53,39 @@ node build.mjs --reprocess --publish "Update deck to v16"
 1. **stamp-version** — injects `<meta name="deck-version">`/`deck-source`/`deck-built` before `</head>` (see Version tracking).
 2. **embed-fonts** — injects `<link rel="stylesheet" href="fonts.css">` before `</head>`.
 3. **nav-toggle** — injects `<script src="deck-controls.js"></script>` before `</body>`.
-4. *(future UI patches go here as discrete, idempotent steps.)*
+4. **svg-swaps** — replaces baked scheme **videos** with **click-driven animated SVGs** (see below).
+5. **bullet-fix** — the eyebrow accent dot is the text glyph `●` from the `--sans` stack. Söhne
+   (the Claude Design viewer's font) draws it near cap-height; absent Söhne, neither Inter nor
+   the Helvetica/Arial fallbacks carry `●`, so it drops to a tiny OS last-resort glyph (~0.44em
+   vs ~0.7em) and the dots look shrunken. This step tags the round-bullet `.acc` spans
+   (`om-acc-dot`) and injects a `<style>` that draws each dot as a **CSS disc sized in em** —
+   font-independent, identical on every machine. The lone `✓` eyebrow is left untouched.
+6. *(future UI patches go here as discrete, idempotent steps.)*
 
 `build.mjs` re-applies all of these on every `--handoff`/`--reprocess` run, so a new version
-(v16, v17, …) is fetched and shipped with fonts + nav-toggle already in place — no manual redo.
+(v16, v17, …) is fetched and shipped with fonts + nav-toggle + the SVG swaps already in place —
+no manual redo.
 
-Each step is a self-contained repo file (`fonts.css`, `deck-controls.js`) + a one-line
-injection. To add a UI tweak: write the patch file, add an idempotent injection block in
-`applyProcessing()`, re-run `node build.mjs --reprocess`.
+Each step is a self-contained repo file (`fonts.css`, `deck-controls.js`, the SVGs in
+`patch-assets/`) + a one-line injection. To add a UI tweak: write the patch file, add an
+idempotent injection block in `applyProcessing()`, re-run `node build.mjs --reprocess`.
+
+### svg-swaps — click-driven scheme animations
+
+Some deck slides bake an animated scheme as an MP4. We replace those with the **live source
+SVG** the video was rendered from, rewired to be **click-driven** (each click on the box builds
+the next part of the diagram). This is **data-driven**: the `SVG_SWAPS` table at the top of
+`build.mjs` maps each deck `…mp4` → an SVG in `patch-assets/`. The step embeds each via
+`<object>` (so the SVG's pictograms + `../fonts.css` load and its `<script>` runs/receives
+clicks; clicks inside it don't bubble out, so slide-advance still works outside the box). A
+manifest row whose video the deck no longer references prints a `⚠` warning, not a silent skip.
+
+**To add another scheme:** author its click-driven SVG, drop it + its pictograms in
+`patch-assets/`, add one `SVG_SWAPS` row, bump `WEB_VERSION`, reprocess. Full authoring recipe +
+reusable script/CSS template: **`patch-assets/README.md`**. Currently swapped: slide 17
+(adapter training — 5 adapters, click-to-train, blinks), slide 13 (LoRA — base → adapters →
+layout generator), slide 14 (typology — apartment → floor → building rows). All forward-only,
+loop back after the last step.
 
 Then it copies `deck-stage.js`, copies **only the assets the deck references** (≈25 of ~65 in
 the bundle, keeps the repo lean), and **verifies there are no broken asset references** before
@@ -91,7 +116,9 @@ assets/            only the media the current deck references
 fonts/             self-hosted woff2 (Inter, JetBrains Mono, Source Serif 4)
 fonts.css          @font-face, injected into index.html by build.mjs
 deck-controls.js   nav-toggle: collapse control for the left rail (injected by build.mjs)
-build.mjs          fetch → process → publish pipeline
+patch-assets/      committed assets injected by processing steps (click-driven scheme SVGs +
+                   their pictograms); copied into assets/ on every build. See its README.md.
+build.mjs          fetch → process → publish pipeline (incl. SVG_SWAPS manifest)
 .nojekyll          serve files verbatim on Pages
 .work/             (git-ignored) downloaded/extracted handoff scratch
 project-docs/      (git-ignored junction) → OneDrive "SpatialTimber - Documents"

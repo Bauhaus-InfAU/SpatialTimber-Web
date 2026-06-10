@@ -1,13 +1,18 @@
 {
   "deckVersion": "v15",
-  "webVersion": "1.0.0",
+  "webVersion": "1.5.0",
   "sourceFile": "SpatialTimber Deck v15.html",
-  "builtAt": "2026-06-10T13:32:07.477Z",
+  "builtAt": "2026-06-10T21:29:59.308Z",
   "slides": 29,
   "assets": 25,
   "processing": [
     "stamp-version",
     "embed-fonts",
-    "nav-toggle"
+    "nav-toggle",
+    "svg-swap:scheme_adapters_training_v6_anim.svg",
+    "svg-swap:scheme_lora_annotated.svg",
+    "svg-swap:scheme_typology_annotated.svg",
+    "bullet-fix:style",
+    "bullet-fix:tag"
   ]
 }

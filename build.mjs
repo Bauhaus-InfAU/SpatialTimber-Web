@@ -31,9 +31,39 @@ const WORK = join(ROOT, ".work");
 // BUMP THIS when you change anything in this repo's processing/patch layer:
 //   patch (x.x.+1) = fix/tweak to an existing patch; minor (x.+1.0) = new processing step /
 //   feature; major (+1.0.0) = a reworking. The deck's own vN is tracked separately.
-const WEB_VERSION = "1.0.0";
+const WEB_VERSION = "1.5.0";
 const ASSETS = join(ROOT, "assets");
+const PATCH_ASSETS = join(ROOT, "patch-assets");   // committed assets injected by processing steps (survive every re-fetch)
 const FONT_LINK = '<link rel="stylesheet" href="fonts.css">';
+
+// Click-driven SVG swaps: each baked scheme MP4 in the deck is replaced by an <object> embedding
+// the click-driven source SVG of the same diagram (authored in patch-assets/ — see
+// patch-assets/README.md for the authoring recipe). This table is re-applied on EVERY deck
+// re-fetch, so new deck versions (v16, v17, …) ship these animations automatically with no redo.
+// To add a scheme: author its click-driven SVG, drop it + its pictograms in patch-assets/, then
+// add one row here. `mp4` is the deck's referenced filename; `svg` is the patch-assets filename;
+// `style` is the original <video>'s style copied verbatim, so the <object> keeps the exact slide
+// layout (the SVG's viewBox gives it the same intrinsic aspect ratio the video had).
+const SVG_SWAPS = [
+  {
+    mp4: "15_scheme_adapters_training.mp4",
+    svg: "scheme_adapters_training_v6_anim.svg",
+    style: "width:100%; height:659px; object-fit:contain; display:block;",
+    label: "Adapter training scheme — click to train each adapter in turn (apartment, arch. quality, floor, building, structural efficiency)",
+  },
+  {
+    mp4: "14_scheme_lora_annotated.mp4",
+    svg: "scheme_lora_annotated.svg",
+    style: "width:100%; max-width:100%; max-height:680px; object-fit:contain; display:block; height:auto;",
+    label: "LoRA scheme — click to build: base model, then stacked adapters, then the layout generator",
+  },
+  {
+    mp4: "15_scheme_typology_annotated.mp4",
+    svg: "scheme_typology_annotated.svg",
+    style: "width:100%; max-width:760px; max-height:560px; object-fit:contain; display:block;",
+    label: "Typology scheme — click to build each data scale in turn (apartment, floor, building) into nested adapters",
+  },
+];
 
 const log = (...a) => console.log(...a);
 const die = (m) => { console.error("\n✗ " + m + "\n"); process.exit(1); };
@@ -125,6 +155,7 @@ function pickDeck(projectDir) {
 // versions unless explicitly told to drop one. Each step is idempotent.
 function applyProcessing(html, meta) {
   const applied = [];
+  const warnings = [];
   // stamp-version: record the source deck version + build time so the live site
   // self-reports what's deployed (queryable via curl/JS). Source HTML never
   // carries these, so this injects fresh on every build.
@@ -149,8 +180,49 @@ function applyProcessing(html, meta) {
     html = html.replace("</body>", `  <script src="deck-controls.js"></script>\n</body>`);
     applied.push("nav-toggle");
   }
+  // svg-swaps: replace each baked scheme MP4 (SVG_SWAPS) with its click-driven source SVG.
+  // Embedded via <object> so the SVG's sub-resources load (its pictograms in assets/, Inter via
+  // fonts.css) AND its internal <script> runs + receives clicks. Clicks inside the embedded SVG
+  // document don't bubble to the page, so the deck's own click-to-advance-slide is unaffected
+  // outside the box. Idempotent (keyed on a per-swap marker). A swap whose video the deck no
+  // longer references is reported as a warning, not fatal — so a deck change is noticed, not silent.
+  for (const sw of SVG_SWAPS) {
+    const marker = `data-swap="${sw.svg}"`;
+    if (html.includes(marker)) continue;                       // already applied this pass
+    const mp4Esc = sw.mp4.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const videoRe = new RegExp(`<video\\b[^>]*\\bassets/${mp4Esc}[^>]*></video>`);
+    if (!videoRe.test(html)) {
+      warnings.push(`svg-swap: deck no longer references assets/${sw.mp4} — '${sw.svg}' NOT applied (deck changed?)`);
+      continue;
+    }
+    const obj = `<object type="image/svg+xml" data="assets/${sw.svg}" ${marker}` +
+      ` aria-label="${sw.label.replace(/"/g, "&quot;")}"` +
+      ` style="${sw.style} border:0;"></object>`;
+    html = html.replace(videoRe, obj);
+    applied.push(`svg-swap:${sw.svg}`);
+  }
+  // bullet-fix: the eyebrow accent bullet is the text glyph "●" rendered from the --sans
+  // stack ("Söhne","Inter",…). In the Claude Design viewer Söhne is installed and draws "●"
+  // near cap-height (~0.7em); here Söhne is unavailable and neither Inter nor the Helvetica/
+  // Arial fallbacks actually carry "●" — it drops to a small OS last-resort glyph (~0.44em),
+  // so every eyebrow dot looks shrunken vs the viewer. Fix is font-independent: tag the round-
+  // bullet spans and draw the dot as a CSS disc sized in em (scales with each eyebrow's font-
+  // size, identical on every machine). The lone "✓" eyebrow is left untouched — only spans
+  // whose content is "●" / "&#9679;" are tagged. Idempotent: the <style> is keyed by id, and
+  // the span rewrite stops matching once class="acc" has become class="acc om-acc-dot".
+  const BULLET_STYLE_ID = "om-bullet-fix";
+  if (!html.includes(`id="${BULLET_STYLE_ID}"`)) {
+    if (!html.includes("</head>")) die("deck HTML has no </head> to inject bullet-fix style into");
+    const css = `  <style id="${BULLET_STYLE_ID}">/* font-independent eyebrow bullet — Söhne "●" fallback fix */\n` +
+      `  .acc.om-acc-dot{display:inline-block;width:.6em;height:.6em;border-radius:50%;background:var(--accent);color:transparent;vertical-align:.02em;overflow:hidden;line-height:0;}</style>\n`;
+    html = html.replace("</head>", `${css}</head>`);
+    applied.push("bullet-fix:style");
+  }
+  const beforeDots = html;
+  html = html.replace(/(<span\b[^>]*\bclass=")acc("[^>]*>)(\s*(?:●|&#9679;)\s*)(<\/span>)/g, "$1acc om-acc-dot$2$3$4");
+  if (html !== beforeDots) applied.push("bullet-fix:tag");
   // --- future UI patches go here (kept as discrete, idempotent steps) ---
-  return { html, applied };
+  return { html, applied, warnings };
 }
 
 // ---- 4. copy referenced assets ----
@@ -167,27 +239,41 @@ function main() {
   log(`• Deck version: ${deckVersion}  (${sourceFile})   ·   web v${WEB_VERSION}`);
 
   let html = readFileSync(deckPath, "utf8");
-  const { html: out, applied } = applyProcessing(html, { deckVersion, webVersion: WEB_VERSION, sourceFile, builtAt });
+  const { html: out, applied, warnings } = applyProcessing(html, { deckVersion, webVersion: WEB_VERSION, sourceFile, builtAt });
   writeFileSync(join(ROOT, "index.html"), out);
   log(`• Processing applied: ${applied.length ? applied.join(", ") : "(none — already current)"}`);
+  for (const w of warnings) log(`  ⚠ ${w}`);
 
   // deck-stage.js
   const stageSrc = join(projectDir, "deck-stage.js");
   if (!existsSync(stageSrc)) die("deck-stage.js missing from bundle");
   copyFileSync(stageSrc, join(ROOT, "deck-stage.js"));
 
-  // assets (only what the deck references)
+  // assets: (1) what the deck references from the bundle, then (2) committed patch-assets/
+  // (SVGs/pictograms our processing steps inject — not in the bundle, must survive re-fetch).
   const used = refs(out);
   rmSync(ASSETS, { recursive: true, force: true });
   mkdirSync(ASSETS, { recursive: true });
-  const missing = [];
   let bytes = 0;
   for (const a of used) {
     const src = join(projectDir, "assets", a);
-    if (!existsSync(src)) { missing.push(a); continue; }
+    if (!existsSync(src)) continue;                  // may be supplied by patch-assets below
     copyFileSync(src, join(ASSETS, a));
     bytes += statSync(src).size;
   }
+  let patchCount = 0;
+  if (existsSync(PATCH_ASSETS)) {
+    for (const f of readdirSync(PATCH_ASSETS)) {
+      const src = join(PATCH_ASSETS, f);
+      if (!statSync(src).isFile()) continue;
+      if (f.toLowerCase().endsWith(".md")) continue;   // docs (README) stay in patch-assets/, never shipped to assets/
+      copyFileSync(src, join(ASSETS, f));
+      bytes += statSync(src).size;
+      patchCount++;
+    }
+  }
+  // anything index.html references that still isn't in assets/ is a genuine broken ref
+  const missing = used.filter((a) => !existsSync(join(ASSETS, a)));
 
   // verify
   const slideCount = (out.match(/<section/g) || []).length;
@@ -204,6 +290,7 @@ function main() {
   log(`  deck version      : ${deckVersion}  ·  web v${WEB_VERSION}  (built ${builtAt.slice(0, 10)})`);
   log(`  slides (sections) : ${slideCount}`);
   log(`  assets referenced : ${used.length}  (${human(bytes)})`);
+  log(`  patch-assets      : ${patchCount} copied (svg + pictograms)`);
   log(`  deck-stage.js     : ok`);
   log(`  fonts             : ${existsSync(join(ROOT, "fonts.css")) ? "fonts.css present" : "MISSING fonts.css"}`);
   if (missing.length) { log(`  ✗ MISSING ASSETS  : ${missing.join(", ")}`); die(`${missing.length} referenced asset(s) missing from bundle — aborting before publish`); }
