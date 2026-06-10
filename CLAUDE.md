@@ -50,7 +50,12 @@ node build.mjs --reprocess --publish "Update deck to v16"
 
 What processing does (`applyProcessing()` in build.mjs):
 1. **embed-fonts** — injects `<link rel="stylesheet" href="fonts.css">` before `</head>` (idempotent).
-2. *(future UI patches go here as discrete, idempotent steps — to be discussed.)*
+2. **nav-toggle** — injects `<script src="deck-controls.js"></script>` before `</body>` (idempotent).
+3. *(future UI patches go here as discrete, idempotent steps.)*
+
+Each step is a self-contained repo file (`fonts.css`, `deck-controls.js`) + a one-line
+injection. To add a UI tweak: write the patch file, add an idempotent injection block in
+`applyProcessing()`, re-run `node build.mjs --reprocess`.
 
 Then it copies `deck-stage.js`, copies **only the assets the deck references** (≈25 of ~65 in
 the bundle, keeps the repo lean), and **verifies there are no broken asset references** before
@@ -80,6 +85,7 @@ deck-stage.js      deck runtime (slide staging, nav, scaling)
 assets/            only the media the current deck references
 fonts/             self-hosted woff2 (Inter, JetBrains Mono, Source Serif 4)
 fonts.css          @font-face, injected into index.html by build.mjs
+deck-controls.js   nav-toggle: collapse control for the left rail (injected by build.mjs)
 build.mjs          fetch → process → publish pipeline
 .nojekyll          serve files verbatim on Pages
 .work/             (git-ignored) downloaded/extracted handoff scratch
@@ -91,6 +97,15 @@ project-docs/      (git-ignored junction) → OneDrive "SpatialTimber - Document
 `SpatialTimber - Documents/04_Publications and Presentations/03_ZukunftBau Projektetage 2026/`
 holds the design brief, asset bundle, and the Claude Design handoff history. The
 `project-docs/` junction points there for convenience during local work.
+
+## Navigator collapse control
+
+The left thumbnail rail can be collapsed for presenting: a small button (bottom-left,
+auto-fades when the mouse is idle) or the **`N`** key toggles it. This is `deck-controls.js`,
+which drives the deck's *own* built-in rail show/hide via `postMessage({type:
+'__deck_rail_visible', on})` — so the collapse animates, persists across reloads
+(`localStorage['deck-stage.railVisible']`), and the slide re-fits to full width. The control
+exists because the standalone export ships the rail machinery but not the host's toggle UI.
 
 ## Gotchas
 

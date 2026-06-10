@@ -121,6 +121,12 @@ function applyProcessing(html) {
     html = html.replace("</head>", `  ${FONT_LINK}\n</head>`);
     applied.push("embed-fonts");
   }
+  // nav-toggle: collapse control for the left thumbnail rail (hide during talks)
+  if (!html.includes('deck-controls.js')) {
+    if (!html.includes("</body>")) die("deck HTML has no </body> to inject controls into");
+    html = html.replace("</body>", `  <script src="deck-controls.js"></script>\n</body>`);
+    applied.push("nav-toggle");
+  }
   // --- future UI patches go here (kept as discrete, idempotent steps) ---
   return { html, applied };
 }
