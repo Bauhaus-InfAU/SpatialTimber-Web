@@ -657,10 +657,10 @@
     section[data-label="29 Thank you"][data-deck-active] [data-om-id="b61726ec:1072"]{animation-delay:2.3s;}
   }
 </style>
-  <meta name="deck-version" content="v27">
+  <meta name="deck-version" content="v28">
   <meta name="web-version" content="1.6.0">
-  <meta name="deck-source" content="SpatialTimber Deck v27.html">
-  <meta name="deck-built" content="2026-06-15T08:18:14.796Z">
+  <meta name="deck-source" content="SpatialTimber Deck v28.html">
+  <meta name="deck-built" content="2026-06-15T09:03:42.049Z">
   <link rel="stylesheet" href="fonts.css">
   <style id="om-bullet-fix">/* font-independent eyebrow bullet — Söhne "●" fallback fix */
   .acc.om-acc-dot{display:inline-block;width:.6em;height:.6em;border-radius:50%;background:var(--accent);color:transparent;vertical-align:.02em;overflow:hidden;line-height:0;}</style>
@@ -823,7 +823,7 @@
         <div class="kpi wd-anim wd-d4" data-om-id="b61726ec:106">
           <div class="kpi-tag" data-om-id="b61726ec:107">Sprawl vs. densification</div>
           <div class="kpi-num" data-om-id="b61726ec:108" style="color: rgb(217, 119, 87);"><span class="mono" data-om-id="b61726ec:109">~10</span><span style="font-size:64px; vertical-align:14px;" data-om-id="b61726ec:110"> ×</span></div>
-          <div class="kpi-caption" data-om-id="b61726ec:111">Cities grew outward <span style="color: rgb(20, 20, 19);" data-om-id="978cbabb:149">~10×</span> faster than they densified inward — densification was just ~9 % of Europe's urban land use (2006–2012).</div>
+          <div class="kpi-caption" data-om-id="b61726ec:111">European cities grew outward <span style="color: rgb(20, 20, 19);" data-om-id="978cbabb:149">~10×</span> faster than they densified inward (2006–2012).</div>
         </div>
       </div>
     </div>
@@ -962,13 +962,12 @@
     section[data-deck-slide="17"][data-deck-active] .st-bullets > *:nth-child(4),
     section[data-deck-slide="17"][data-deck-active] .st-bullets > *:nth-child(5){ animation-delay:2.9s; }
 
-    /* 19 Demo current — reliability ceiling / two levers / take-home, ~1s apart */
-    section[data-deck-slide="18"][data-deck-active] .st-bullets > *:nth-child(1){ animation-delay:.9s; }
+    /* 19 Demo current — media box first, then reliability ceiling / two levers / take-home, ~1s apart */
+    section[data-deck-slide="18"][data-deck-active] .st-media{ animation-delay:.2s; }
+    section[data-deck-slide="18"][data-deck-active] .st-bullets > *:nth-child(1){ animation-delay:1.1s; }
     section[data-deck-slide="18"][data-deck-active] .st-bullets > *:nth-child(2),
-    section[data-deck-slide="18"][data-deck-active] .st-bullets > *:nth-child(3){ animation-delay:1.9s; }
-    section[data-deck-slide="18"][data-deck-active] .st-bullets > *:nth-child(4){ animation-delay:2.9s; }
-    /* media box appears last, after all bullets */
-    section[data-deck-slide="18"][data-deck-active] .st-media{ animation-delay:3.6s; }
+    section[data-deck-slide="18"][data-deck-active] .st-bullets > *:nth-child(3){ animation-delay:2.1s; }
+    section[data-deck-slide="18"][data-deck-active] .st-bullets > *:nth-child(4){ animation-delay:3.1s; }
 
     /* 20 Furnishability — intro + check + score, ~1s apart; reference last */
     section[data-deck-slide="19"][data-deck-active] .st-bullets > *:nth-child(1){ animation-delay:.9s; }
@@ -1410,8 +1409,8 @@ We know how to build this.</p>
     <div class="eyebrow mute" data-om-id="b61726ec:362">Adapters — performance gap</div>
     <h1 class="title" style="margin-top:14px; font-style:italic;" data-om-id="b61726ec:363">No answers to imitate? <br data-om-id="b61726ec:364br"><em data-om-id="b61726ec:364">Learn through <span style="color: #d97757" data-om-id="978cbabb:557">feedback.</span></em></h1>
 
-    <div style="flex:1; display:grid; grid-template-columns: 1fr 1.2fr; gap:60px; margin-top:24px; align-items:center;" data-om-id="b61726ec:365">
-      <div class="st16-seq" style="display:flex; flex-direction:column; gap:18px;" data-om-id="b61726ec:366">
+    <div style="flex:1; display:grid; grid-template-columns: 1.2fr 1fr; gap:60px; margin-top:24px; align-items:center;" data-om-id="b61726ec:365">
+      <div class="st16-seq" style="order:2; display:flex; flex-direction:column; gap:18px;" data-om-id="b61726ec:366">
         <p class="body" style="font-size:24px; line-height:1.32; font-style:italic; color:var(--mute);" data-om-id="b61726ec:367">The Swiss dataset teaches the model what a floor plan looks like, not what we consider a good one. </p>
 
         <div class="rule thin" data-om-id="b61726ec:368"></div>
@@ -1435,12 +1434,12 @@ We know how to build this.</p>
             <span class="body" style="font-size:22px; line-height:1.3;" data-om-id="b61726ec:383">Can each room fit the furniture it needs?</span>
           </div>
           <div style="display:grid; grid-template-columns: 220px 1fr; gap:18px; padding:10px 0;" data-om-id="b61726ec:384">
-            <span class="mono" style="font-size:22px; font-weight:700; color:var(--accent);" data-om-id="b61726ec:385">Structural utility<sup style="font-size:13px; font-weight:500;" data-om-id="5969125a:504">2</sup></span>
+            <span class="mono" style="font-size:22px; font-weight:700; color:var(--accent);" data-om-id="b61726ec:385">Structural utility</span>
             <span class="body" style="font-size:22px; line-height:1.3;" data-om-id="b61726ec:386">Are loads carried efficiently by the wall layout?</span>
           </div>
         </div>
 
-        <p class="ph-note" style="margin-top:-4px; font-size:14px; line-height:1.45;" data-om-id="5969125a:506"><sup data-om-id="5969125a:507">1</sup>&nbsp;No off-the-shelf evaluator exists — we develop one in this project. &nbsp;&nbsp;<sup data-om-id="5969125a:508">2</sup>&nbsp;Exists only as FE analysis (minutes per query); we train a surrogate to make it loop-fast.</p>
+        <p class="ph-note" style="margin-top:-4px; font-size:14px; line-height:1.45;" data-om-id="5969125a:506"><sup data-om-id="5969125a:507">1</sup>&nbsp;No off-the-shelf evaluator exists — we develop one in this project.</p>
 
         <div class="rule thin" data-om-id="b61726ec:387"></div>
         <div class="eyebrow" data-om-id="b61726ec:388"><span class="acc om-acc-dot" data-om-id="b61726ec:389">●</span>&nbsp;&nbsp;Fast feedback loop</div>
@@ -1448,7 +1447,7 @@ We know how to build this.</p>
       </div>
 
       <!-- Pictogram: learning through feedback — click / press → cross-fades to annotated diagram -->
-      <div id="s14-media-box" class="st-media" data-s14-state="picto" style="border:1px solid var(--ink); padding:24px 36px; display:flex; flex-direction:column; align-items:stretch; justify-content:center; gap:12px; background:#faf9f5; cursor:pointer;" data-om-id="b61726ec:392">
+      <div id="s14-media-box" class="st-media" data-s14-state="picto" style="order:1; border:1px solid var(--ink); padding:24px 36px; display:flex; flex-direction:column; align-items:stretch; justify-content:center; gap:12px; background:#faf9f5; cursor:pointer;" data-om-id="b61726ec:392">
         <div class="mono mute" style="font-size:16px; letter-spacing:0.12em; display:flex; justify-content:space-between; align-items:center;" data-om-id="b61726ec:393">
           <span id="s14-label-picto" data-om-id="5969125a:516">REINFORCEMENT · LEARN FROM FEEDBACK</span>
           <span id="s14-label-hint" class="mono mute" style="font-size:13px; letter-spacing:0.18em; opacity:0.55;" data-om-id="5969125a:517">CLICK / → TO REVEAL</span>
@@ -1524,22 +1523,22 @@ We know how to build this.</p>
 <!-- =================== DEMO CURRENT (duplicate — restored to original position) =================== -->
 <section data-label="19 Demo current" data-om-id="b61726ec:447" data-screen-label="19 19 Demo current" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="18" data-st-build>
   <div class="chrome-top" data-om-id="b61726ec:448"><span class="wm" data-om-id="b61726ec:449">02 Approach</span><span class="pg" data-om-id="b61726ec:450">19 / 29</span></div>
-  <div class="frame" style="padding-top:96px; padding-bottom:60px;" data-om-id="b61726ec:451">
+  <div class="frame" style="padding-top:88px; padding-bottom:28px;" data-om-id="b61726ec:451">
     <div class="eyebrow mute" data-om-id="b61726ec:454">Where we are today · SpatialTimber Aufstockung Assistent</div>
     <h1 class="title" style="margin-top:14px;" data-om-id="b61726ec:455"><em data-om-id="b61726ec:455e">Early prototype, lessons learned.</em></h1>
 
-    <div style="flex:1; display:grid; grid-template-columns: 1fr 1.37fr; gap:60px; margin-top:30px; min-height:0;" data-om-id="b61726ec:452">
+    <div style="flex:1; display:grid; grid-template-columns: 1.55fr 1fr; gap:60px; margin-top:22px; min-height:0;" data-om-id="b61726ec:452">
       <!-- LEFT: demonstrator media box (empty placeholder, full size — matches previous slide) -->
-      <div class="st-media" style="order:2; display:flex; flex-direction:column; align-items:flex-end; justify-content:center; gap:6px; min-height:0;" data-om-id="b61726ec:453">
-        <div id="demo-media-stage" style="position:relative; display:inline-flex; max-width:100%; max-height:100%; border:1.5px solid var(--ink); border-radius:22px; overflow:hidden; background:#141413; cursor:pointer;" data-om-id="b61726ec:457">
-          <video src="assets/demonstrator_short_v1.mp4" autoplay="" loop="" muted="" playsinline="" preload="auto" poster="assets/demonstrator_short_v1_poster.jpg" aria-label="SpatialTimber Aufstockung Assistent demonstrator — screen recording" style="display:block; max-width:100%; max-height:100%; width:auto; height:auto; object-fit:contain;" data-om-id="978cbabb:677v"></video>
+      <div class="st-media" style="order:1; display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:8px; min-height:0;" data-om-id="b61726ec:453">
+        <div id="demo-media-stage" style="position:relative; flex:1 1 0; min-height:0; aspect-ratio:1510 / 1086; max-width:100%; display:flex; align-items:center; justify-content:center; border:1.5px solid var(--ink); border-radius:22px; overflow:hidden; background: rgb(255, 255, 255); cursor:pointer;" data-om-id="b61726ec:457">
+          <video src="assets/demonstrator_short_v1.mp4" autoplay="" loop="" muted="" playsinline="" preload="auto" poster="assets/demonstrator_short_v1_poster.jpg" aria-label="SpatialTimber Aufstockung Assistent demonstrator — screen recording" style="display:block; width:100%; height:100%; object-fit:cover;" data-om-id="978cbabb:677v"></video>
           <div id="demo-chart-overlay" data-om-validate="false" aria-hidden="true" data-om-id="978cbabb:679"><svg class="fvc-svg" viewBox="0 0 1976 1080" preserveAspectRatio="xMidYMid meet"><line class="fvc-grid" x1="241" y1="950.0" x2="1735" y2="950.0"></line><text class="fvc-tick" x="219" y="958.0" text-anchor="end">0%</text><line class="fvc-grid" x1="241" y1="762.8" x2="1735" y2="762.8"></line><text class="fvc-tick" x="219" y="770.8" text-anchor="end">25%</text><line class="fvc-grid" x1="241" y1="575.5" x2="1735" y2="575.5"></line><text class="fvc-tick" x="219" y="583.5" text-anchor="end">50%</text><line class="fvc-grid" x1="241" y1="388.3" x2="1735" y2="388.3"></line><text class="fvc-tick" x="219" y="396.3" text-anchor="end">75%</text><line class="fvc-grid" x1="241" y1="201.0" x2="1735" y2="201.0"></line><text class="fvc-tick" x="219" y="209.0" text-anchor="end">100%</text><text class="fvc-tick" x="241.0" y="1000" text-anchor="middle">1</text><text class="fvc-tick" x="376.8" y="1000" text-anchor="middle">2</text><text class="fvc-tick" x="512.6" y="1000" text-anchor="middle">3</text><text class="fvc-tick" x="648.5" y="1000" text-anchor="middle">4</text><text class="fvc-tick" x="784.3" y="1000" text-anchor="middle">5</text><text class="fvc-tick" x="920.1" y="1000" text-anchor="middle">6</text><text class="fvc-tick" x="1055.9" y="1000" text-anchor="middle">7</text><text class="fvc-tick" x="1191.7" y="1000" text-anchor="middle">8</text><text class="fvc-tick" x="1327.5" y="1000" text-anchor="middle">9</text><text class="fvc-tick" x="1463.4" y="1000" text-anchor="middle">10</text><text class="fvc-tick" x="1599.2" y="1000" text-anchor="middle">11</text><text class="fvc-tick" x="1735.0" y="1000" text-anchor="middle">12</text><line class="fvc-axis" x1="241" y1="201" x2="241" y2="950"></line><line class="fvc-axis" x1="241" y1="950" x2="1735" y2="950"></line><text class="fvc-axtitle" transform="translate(96,575.5) rotate(-90)" text-anchor="middle">Validity</text><text class="fvc-axtitle" x="1735" y="1058" text-anchor="end">Number of apartments →</text><path class="fvc-area" d="M241.0 350.8L376.8 470.6L512.6 566.5L648.5 643.2L784.3 704.6L920.1 753.7L1055.9 792.9L1191.7 824.3L1327.5 849.5L1463.4 869.6L1599.2 885.7L1735.0 898.5L1735.0 950.0L241.0 950.0Z"></path><path class="fvc-curve" d="M241.0 350.8L376.8 470.6L512.6 566.5L648.5 643.2L784.3 704.6L920.1 753.7L1055.9 792.9L1191.7 824.3L1327.5 849.5L1463.4 869.6L1599.2 885.7L1735.0 898.5"></path><circle class="fvc-dot-hero" cx="241.0" cy="350.8" r="18"></circle><circle class="fvc-dot" cx="376.8" cy="470.6" r="11"></circle><circle class="fvc-dot" cx="512.6" cy="566.5" r="11"></circle><circle class="fvc-dot" cx="648.5" cy="643.2" r="11"></circle><circle class="fvc-dot" cx="784.3" cy="704.6" r="11"></circle><circle class="fvc-dot" cx="920.1" cy="753.7" r="11"></circle><circle class="fvc-dot" cx="1055.9" cy="792.9" r="11"></circle><circle class="fvc-dot" cx="1191.7" cy="824.3" r="11"></circle><circle class="fvc-dot" cx="1327.5" cy="849.5" r="11"></circle><circle class="fvc-dot" cx="1463.4" cy="869.6" r="11"></circle><circle class="fvc-dot" cx="1599.2" cy="885.7" r="11"></circle><circle class="fvc-dot-hero" cx="1735.0" cy="898.5" r="18"></circle></svg><div class="fvc-hero"><div class="fvc-block"><div class="fvc-stepper" data-stop=""><button class="fvc-btn fvc-minus" aria-label="decrease">−</button><div class="fvc-num"><span class="fvc-val fvc-heroval">80</span><span class="fvc-pct">%</span></div><button class="fvc-btn fvc-plus" aria-label="increase">+</button></div><div class="fvc-cap">per apartment</div></div><div class="fvc-arrow"><span class="glyph">→</span><span class="note">across 12 units</span></div><div class="fvc-block fvc-result"><div class="fvc-num"><span class="fvc-val fvc-take-build">7</span><span class="fvc-pct">%</span></div><div class="fvc-cap">whole building</div></div></div><div class="fvc-hint"><span class="d"></span>click box to resume demonstrator</div></div>
         </div>
-        <div class="demo-caption mono mute" data-om-id="b61726ec:453cap" style="font-size:16px; letter-spacing:0.12em; margin-right:24px;">AUFSTOCKUNG DEMONSTRATOR</div>
+        <div class="demo-caption mono mute" data-om-id="b61726ec:453cap" style="font-size:16px; letter-spacing:0.12em; align-self:flex-start; flex:0 0 auto;">AUFSTOCKUNG DEMONSTRATOR</div>
       </div>
 
       <!-- RIGHT: lessons-learned bullets -->
-      <div class="st-bullets" style="order:1; display:flex; flex-direction:column; gap:20px;" data-om-id="978cbabb:680">
+      <div class="st-bullets" style="order:2; display:flex; flex-direction:column; gap:20px;" data-om-id="978cbabb:680">
         <div data-om-id="978cbabb:681">
           <div class="eyebrow" data-om-id="978cbabb:682"><span class="acc om-acc-dot" data-om-id="978cbabb:683">●</span>&nbsp;&nbsp;The reliability ceiling</div>
           <div style="display:flex; flex-direction:column; gap:11px; margin-top:12px; margin-left:28px;" data-comment-anchor="ed33cc4627-p" data-om-id="978cbabb:684">
@@ -1940,8 +1939,7 @@ We know how to build this.</p>
     <div style="display:flex; justify-content:space-between; align-items:baseline; gap:40px;" data-om-id="978cbabb:1096">
       <div data-om-id="978cbabb:1097">
         <div class="eyebrow mute" data-om-id="978cbabb:1098">OUTCOME (SECONDARY) · STRUCTURAL PERFORMANCE SURROGATE</div>
-        <h1 class="title" style="margin-top:14px; font-style:italic;" data-om-id="978cbabb:1099"><span style="color: #d97757">Beyond FEM,</span>
-things we couldn't do before.</h1>
+        <h1 class="title" style="margin-top:14px; font-style:italic;" data-om-id="978cbabb:1099"><span style="color: #d97757">Beyond FEM.</span> <br data-om-id="978cbabb:1099br">Things we couldn't do before.</h1>
       </div>
     </div>
 
@@ -3061,7 +3059,7 @@ things we couldn't do before.</h1>
     </div>
     <div class="st-bottom">
       <div class="st-progress"><div class="bar"></div></div>
-      <div class="st-meta"><span>Zukunft Bau Projekttage 2026</span><span class="st-loading">Loading</span></div>
+      <div class="st-meta"><span>Zukunft Bau Projekttage 2026</span></div>
     </div>
   </div>
 </div>
