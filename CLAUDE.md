@@ -53,7 +53,8 @@ node build.mjs --reprocess --publish "Update deck to v16"
 1. **stamp-version** — injects `<meta name="deck-version">`/`deck-source`/`deck-built` before `</head>` (see Version tracking).
 2. **embed-fonts** — injects `<link rel="stylesheet" href="fonts.css">` before `</head>`.
 3. **nav-toggle** — injects `<script src="deck-controls.js"></script>` before `</body>`.
-4. **svg-swaps** — replaces baked scheme **videos** with **click-driven animated SVGs** (see below).
+4. **svg-swaps** — replaces baked scheme **videos** with **click- + keyboard-driven animated SVGs**
+   (persistent build cue, `→`/click to build, then next slide; see below).
 5. **bullet-fix** — the eyebrow accent dot is the text glyph `●` from the `--sans` stack. Söhne
    (the Claude Design viewer's font) draws it near cap-height; absent Söhne, neither Inter nor
    the Helvetica/Arial fallbacks carry `●`, so it drops to a tiny OS last-resort glyph (~0.44em
@@ -73,19 +74,29 @@ idempotent injection block in `applyProcessing()`, re-run `node build.mjs --repr
 ### svg-swaps — click-driven scheme animations
 
 Some deck slides bake an animated scheme as an MP4. We replace those with the **live source
-SVG** the video was rendered from, rewired to be **click-driven** (each click on the box builds
-the next part of the diagram). This is **data-driven**: the `SVG_SWAPS` table at the top of
-`build.mjs` maps each deck `…mp4` → an SVG in `patch-assets/`. The step embeds each via
-`<object>` (so the SVG's pictograms + `../fonts.css` load and its `<script>` runs/receives
+SVG** the video was rendered from, rewired to be **click- and keyboard-driven** (each click /
+`→` / Space builds the next part of the diagram). This is **data-driven**: the `SVG_SWAPS` table
+at the top of `build.mjs` maps each deck `…mp4` → an SVG in `patch-assets/`. The step embeds each
+via `<object>` (so the SVG's pictograms + `../fonts.css` load and its `<script>` runs/receives
 clicks; clicks inside it don't bubble out, so slide-advance still works outside the box). A
 manifest row whose video the deck no longer references prints a `⚠` warning, not a silent skip.
 
+**Build interaction (web v1.6.0):** each scheme has a **persistent cue** at the bottom of the box
+that counts progress (`Click or press → to build  (1 / 2)`) and flips to a terracotta done state
+(`✓ Built — press → for next slide`) when complete. `→`/Space/PageDown advance the build, then
+move to the **next slide** once built; `←` always goes to the **previous slide**; **clicking a
+fully-built scheme restarts it** (it no longer auto-loops). This needs both halves: each SVG
+exposes `window.__scheme = {total, built(), forward(), restart()}` + its own keydown handler, and
+`deck-controls.js` adds a capture-phase keydown + `__deckNext/__deckPrev` so `→` builds the scheme
+(instead of changing slide) whenever the current slide holds a not-yet-built scheme. See
+**`patch-assets/README.md`** for the full contract.
+
 **To add another scheme:** author its click-driven SVG, drop it + its pictograms in
 `patch-assets/`, add one `SVG_SWAPS` row, bump `WEB_VERSION`, reprocess. Full authoring recipe +
-reusable script/CSS template: **`patch-assets/README.md`**. Currently swapped: slide 17
-(adapter training — 5 adapters, click-to-train, blinks), slide 13 (LoRA — base → adapters →
-layout generator), slide 14 (typology — apartment → floor → building rows). All forward-only,
-loop back after the last step.
+reusable script/CSS template: **`patch-assets/README.md`**. Currently swapped (slide numbers as of
+deck v27 — they drift with deck content): slide 18 (adapter training — 5 adapters, click/`→` to
+train, blinks), slide 14 (LoRA — base → adapters → layout generator), slide 15 (typology —
+apartment → floor → building rows).
 
 Then it copies `deck-stage.js`, copies **only the assets the deck references** (≈25 of ~65 in
 the bundle, keeps the repo lean), and **verifies there are no broken asset references** before
