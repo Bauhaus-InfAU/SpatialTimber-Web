@@ -31,7 +31,7 @@ const WORK = join(ROOT, ".work");
 // BUMP THIS when you change anything in this repo's processing/patch layer:
 //   patch (x.x.+1) = fix/tweak to an existing patch; minor (x.+1.0) = new processing step /
 //   feature; major (+1.0.0) = a reworking. The deck's own vN is tracked separately.
-const WEB_VERSION = "1.5.1";
+const WEB_VERSION = "1.6.0";
 const ASSETS = join(ROOT, "assets");
 const PATCH_ASSETS = join(ROOT, "patch-assets");   // committed assets injected by processing steps (survive every re-fetch)
 const FONT_LINK = '<link rel="stylesheet" href="fonts.css">';

@@ -17,6 +17,35 @@ that replacement re-apply automatically to every future deck version (v16, v17, 
 4. Clicks inside the embedded SVG document **don't bubble to the page**, so the deck's own
    click-to-advance-slide still works everywhere *outside* the box.
 
+## Keyboard + the persistent build cue (web v1.6.0)
+
+Each scheme is also a **keyboard-driven** build, and the cue text is **always visible** so a
+presenter knows how far along the build is:
+
+- **`→` / Space / PageDown** advances the build one step; once fully built, `→` moves to the
+  **next slide**. **`←`** always goes to the previous slide.
+- **Click** still builds step-by-step; clicking a **fully-built** scheme **restarts** it.
+- The `#cue` text reads `Click or press → to build  (N / total)` while building and
+  `✓ Built — press → for next slide` (in terracotta) once done.
+
+This needs two cooperating halves, because keyboard focus can sit either on the deck or
+*inside* the `<object>`:
+
+- **Each SVG** exposes `window.__scheme = { total, built(), forward(), restart() }`, handles its
+  own `keydown` (for when focus is inside the embed), and calls `window.parent.__deckNext()` /
+  `__deckPrev()` to change slides — then `window.parent.focus()` so the keyboard returns to the
+  deck. The `forward()` step machine **does not loop** at the end (returns `false`); only a
+  *click* restarts.
+- **`deck-controls.js`** exposes `__deckNext/__deckPrev` and adds a **capture-phase** `keydown`
+  listener: on a slide whose `<object>` has a not-yet-built `__scheme`, it calls `forward()` and
+  swallows the event so the deck doesn't change slide. Built / non-scheme slides fall through to
+  the deck's normal nav.
+
+**When authoring a new scheme, reuse this contract:** keep the `#cue` element, expose
+`window.__scheme`, drive `updateCue()` from `paint()`, and copy the click + `keydown` + `nav()`
+block from an existing scheme (`scheme_lora_annotated.svg` is the simplest). The reusable
+template below predates this and shows only the click/cue-at-step-0 core.
+
 If a future deck no longer references a swap's `mp4` (e.g. it was renamed in Claude Design),
 the build prints a `⚠ svg-swap: … NOT applied (deck changed?)` warning instead of silently
 skipping — so you notice and fix the manifest row.

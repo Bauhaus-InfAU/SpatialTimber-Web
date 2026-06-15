@@ -61,10 +61,11 @@
       #q-apt,#q-archq,#q-floor,#q-building,#q-struct,
       #flash-fill-apt,#flash-out-apt,#flash-fill-archq,#flash-out-archq,
       #flash-fill-floor,#flash-out-floor,#flash-fill-building,#flash-out-building,
-      #flash-fill-struct,#flash-out-struct,#cue { opacity: 0; }
+      #flash-fill-struct,#flash-out-struct { opacity: 0; }
 
-      /* the click cue shows only at step 0 */
-      .cue #cue { opacity: 1; }
+      /* the click/keyboard cue stays visible the whole time (JS rewrites its
+         text per step: progress while building, a done state once trained). */
+      #cue { opacity: 1; transition: opacity .5s ease, fill .3s ease; }
 
       /* cumulative training reveals (one adapter added per click) */
       .on-apt    #veil-apt{opacity:0}      .on-apt    #solid-apt{opacity:1}        .on-apt    #g-arr-apt{opacity:1}      .on-apt    #sh-apt{stroke-dashoffset:0}
@@ -236,27 +237,54 @@
   <script type="text/javascript"><![CDATA[
     (function(){
       var KEYS = ['apt','archq','floor','bldg','struct'];
+      var TOTAL = KEYS.length;
       var root = document.documentElement;        // the <svg> element
       var step = 0, timer = null;
+      function updateCue(){
+        var cue = document.getElementById('cue');
+        if (!cue) return;
+        if (step >= TOTAL){ cue.textContent = '✓ Trained — press → for next slide'; cue.setAttribute('fill', '#D97757'); }
+        else { cue.textContent = 'Click or press → to train the next adapter  (' + step + ' / ' + TOTAL + ')'; cue.setAttribute('fill', '#9C9A92'); }
+      }
       function paint(flashKey){
         var c = [];
-        if (step === 0) c.push('cue');
         for (var i = 0; i < step; i++) c.push('on-' + KEYS[i]);
         if (step >= 1) c.push('head-' + step);
         if (flashKey) c.push('flash-' + flashKey);
         root.setAttribute('class', c.join(' '));
+        updateCue();
       }
-      function advance(){
+      // Advance one training step. Returns false (does NOT loop) when already
+      // fully trained, so the keyboard can fall through to "next slide".
+      function forward(){
         if (timer){ clearTimeout(timer); timer = null; }
-        if (step >= KEYS.length){ step = 0; paint(null); return; }  // past the last adapter -> replay
+        if (step >= TOTAL) return false;
         step += 1;
         paint(KEYS[step - 1]);                                      // reveal + blink the new adapter
-        if (step < KEYS.length){                                    // adapters 1-4: end the 2 blinks, keep the reveal
+        if (step < TOTAL){                                          // adapters 1-4: end the 2 blinks, keep the reveal
           timer = setTimeout(function(){ paint(null); }, 2300);
         }
-        // last adapter (struct): leave flash-struct on -> it keeps blinking until the next click resets
+        // last adapter (struct): leave flash-struct on -> it keeps blinking until reset
+        return true;
       }
-      root.addEventListener('click', advance);
+      function restart(){ if (timer){ clearTimeout(timer); timer = null; } step = 0; paint(null); }
+      // Click builds the next step; clicking a fully-built scheme restarts it.
+      root.addEventListener('click', function(){
+        if (step >= TOTAL) restart(); else forward();
+        try { window.parent.focus(); } catch (e) {}                 // keep keyboard nav on the deck
+      });
+      // Keyboard when focus is inside this embed: ->/Space build; once built ->
+      // asks the parent deck for the next slide; <- always goes to prev slide.
+      document.addEventListener('keydown', function(e){
+        if (e.metaKey || e.ctrlKey || e.altKey) return;
+        var k = e.key;
+        if (k === 'ArrowRight' || k === 'PageDown' || k === ' ' || k === 'Spacebar'){ e.preventDefault(); if (!forward()) nav(1); }
+        else if (k === 'ArrowLeft' || k === 'PageUp'){ e.preventDefault(); nav(-1); }
+      });
+      function nav(dir){ try { var p = window.parent; if (dir > 0 && p.__deckNext) p.__deckNext(); else if (dir < 0 && p.__deckPrev) p.__deckPrev(); p.focus(); } catch (e) {} }
+      // Exposed so the parent (deck-controls.js) can drive the build when focus
+      // is on the deck rather than inside this embed.
+      window.__scheme = { total: TOTAL, built: function(){ return step >= TOTAL; }, forward: forward, restart: restart };
       paint(null);
     })();
   ]]></script>

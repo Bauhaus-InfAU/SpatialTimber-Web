@@ -35,6 +35,42 @@
     window.postMessage({ type: '__deck_rail_visible', on: !!on }, '*');
   }
 
+  // ── Scheme-SVG nav bridge ─────────────────────────────────────────────
+  // The click-driven scheme SVGs (slides with an <object> embed) build step by
+  // step on click / →. So the presenter can also drive them from the keyboard,
+  // and so → only leaves the slide once the scheme is fully built, we:
+  //   (a) expose __deckNext/__deckPrev for an embedded SVG to call when done, and
+  //   (b) intercept →/Space/PageDown in the CAPTURE phase (before the deck's own
+  //       key handler): if the current slide holds a not-yet-built scheme,
+  //       advance the scheme instead of the deck.
+  // Left/Page-Up, and a fully-built scheme, fall through to the deck's normal nav.
+  window.__deckNext = function () { var d = deck(); if (d) d._advance(1, 'api'); };
+  window.__deckPrev = function () { var d = deck(); if (d) d._advance(-1, 'api'); };
+
+  // The scheme API (window.__scheme) of the <object> on the current slide, if any.
+  function currentScheme() {
+    var d = deck();
+    var sec = (d && d._slides && typeof d._index === 'number') ? d._slides[d._index] : null;
+    if (!sec) sec = document.querySelector('[data-deck-active]');
+    if (!sec) return null;
+    var obj = sec.querySelector('object[type="image/svg+xml"]');
+    if (!obj) return null;
+    try { var w = obj.contentWindow; return (w && w.__scheme) ? w.__scheme : null; } catch (e) { return null; }
+  }
+
+  window.addEventListener('keydown', function (e) {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    var t = e.target;
+    if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+    var k = e.key;
+    if (k !== 'ArrowRight' && k !== 'PageDown' && k !== ' ' && k !== 'Spacebar') return;
+    var s = currentScheme();
+    if (s && !s.built() && s.forward()) {   // built the scheme -> swallow, don't change slide
+      e.stopImmediatePropagation();
+      e.preventDefault();
+    }
+  }, true);   // capture: run before the deck's own keydown handler
+
   function ready(fn) {
     if (document.readyState !== 'loading') fn();
     else document.addEventListener('DOMContentLoaded', fn);
