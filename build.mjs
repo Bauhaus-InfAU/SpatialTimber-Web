@@ -31,7 +31,7 @@ const WORK = join(ROOT, ".work");
 // BUMP THIS when you change anything in this repo's processing/patch layer:
 //   patch (x.x.+1) = fix/tweak to an existing patch; minor (x.+1.0) = new processing step /
 //   feature; major (+1.0.0) = a reworking. The deck's own vN is tracked separately.
-const WEB_VERSION = "1.5.0";
+const WEB_VERSION = "1.5.1";
 const ASSETS = join(ROOT, "assets");
 const PATCH_ASSETS = join(ROOT, "patch-assets");   // committed assets injected by processing steps (survive every re-fetch)
 const FONT_LINK = '<link rel="stylesheet" href="fonts.css">';
@@ -130,7 +130,7 @@ function resolveBundle() {
   log(`• Extracting ${tarball} (${human(statSync(tarball).size)}) …`);
   rmSync(extractDir, { recursive: true, force: true });
   mkdirSync(extractDir, { recursive: true });
-  sh("tar", ["-xzf", tarball, "-C", extractDir]);
+  sh("tar", ["--force-local", "-xzf", tarball, "-C", extractDir]);
   return findProjectDir(extractDir) ?? die("no deck project dir found inside the tarball");
 }
 
@@ -258,7 +258,9 @@ function main() {
   for (const a of used) {
     const src = join(projectDir, "assets", a);
     if (!existsSync(src)) continue;                  // may be supplied by patch-assets below
-    copyFileSync(src, join(ASSETS, a));
+    const dest = join(ASSETS, a);
+    mkdirSync(dirname(dest), { recursive: true });   // assets may live in subfolders (e.g. surrogate/)
+    copyFileSync(src, dest);
     bytes += statSync(src).size;
   }
   let patchCount = 0;

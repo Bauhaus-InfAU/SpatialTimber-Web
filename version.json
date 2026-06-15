@@ -1,10 +1,10 @@
 {
-  "deckVersion": "v15",
-  "webVersion": "1.5.0",
-  "sourceFile": "SpatialTimber Deck v15.html",
-  "builtAt": "2026-06-10T21:41:45.917Z",
+  "deckVersion": "v27",
+  "webVersion": "1.5.1",
+  "sourceFile": "SpatialTimber Deck v27.html",
+  "builtAt": "2026-06-15T07:40:28.131Z",
   "slides": 29,
-  "assets": 25,
+  "assets": 48,
   "processing": [
     "stamp-version",
     "embed-fonts",

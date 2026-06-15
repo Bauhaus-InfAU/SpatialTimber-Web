@@ -175,9 +175,9 @@
     <g class="card-content">
       <rect class="card" x="658" y="122" width="440" height="257" rx="32" ry="32"/>
       <text class="label-title" x="878" y="200" text-anchor="middle" font-size="40">Adapters</text>
-      <text class="label-body"  x="878" y="255" text-anchor="middle" font-size="30">SpatialTimber project</text>
-      <text class="label-body"  x="878" y="295" text-anchor="middle" font-size="30">specific Adapters</text>
-      <text class="label-body"  x="878" y="335" text-anchor="middle" font-size="30">small Neural Networks</text>
+      <text class="label-body"  x="878" y="255" text-anchor="middle" font-size="30">task-specific</text>
+      <text class="label-body"  x="878" y="295" text-anchor="middle" font-size="30">small &amp; trainable</text>
+      <text class="label-body"  x="878" y="335" text-anchor="middle" font-size="30">layer of weights</text>
     </g>
 
     <path class="arrow-shaft" d="M 470 190 L 614 190"/>
