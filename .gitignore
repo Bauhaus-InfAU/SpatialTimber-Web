@@ -11,3 +11,6 @@ Thumbs.db
 
 # Build pipeline scratch (downloaded/extracted handoff)
 .work/
+
+# Standalone single-file export (large; generated on demand via make-standalone.mjs, share directly)
+SpatialTimber-Deck-*-standalone.html
