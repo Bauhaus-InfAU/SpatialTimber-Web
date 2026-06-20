@@ -19,14 +19,43 @@ The deck is authored in **Claude Design** (claude.ai/design). We never edit the 
 hand — we re-fetch it. Local processing (font embedding, future UI tweaks) is applied
 **deterministically by `build.mjs`** so it survives every re-fetch.
 
-### Handoff links expire
+### Getting a new deck out of Claude Design — TWO routes
 
-To get a new deck, the user pastes a fresh handoff URL like
-`https://api.anthropic.com/v1/design/h/<id>?open_file=<file>.html`.
-**These links expire quickly and must be re-requested from the user every time.** Never
-assume an old link still works. The link returns a ~200 MB gzip tarball containing many deck
-versions (`SpatialTimber Deck vN.html`), `deck-stage.js` (the runtime), an `assets/` folder,
-plus chat transcripts and a README.
+Claude Design's **Export** button no longer hands over a file directly. It now emits an **MCP
+import instruction** that points an agent at the `claude_design` MCP connector
+(`https://api.anthropic.com/v1/design/mcp`) plus a project URL like
+`https://claude.ai/design/p/<projectId>?file=SpatialTimber+Deck+vN.html`.
+
+**Route A — MCP connector (does NOT work for the full deck):** the connector (the `DesignSync`
+tool: `list_projects` / `list_files` / `get_file` …) is fine for *listing* and metadata, but
+its **`get_file` caps reads at 256 KiB**. A deck HTML is ~270 KB+, so `get_file` returns it
+**silently truncated** (cut off mid-CSS, no `</body></html>`). Do not build from it — the cut is
+not flagged as an error. Confirmed dead end as of deck v33 (2026-06-19). *(The same RPC called
+directly in the browser returns the full file, but it's wrapped in the editor's
+`data-omelette-injected` preview script/style and is exactly the kind of hand-massaging this
+repo avoids — don't go there.)*
+
+**Route B — ZIP handoff (the one that works):** in Claude Design, next to Export choose
+**Download ZIP**. This produces a full bundle **`<project name>-handoff.zip`** (~322 MB) that the
+user drops into **`version/`** in this repo. It contains a `project/` dir with every deck version
+(`SpatialTimber Deck vN.html`), `deck-stage.js` (the runtime), an `assets/` folder, plus a README.
+This is the current canonical way to get a new deck in. (The older expiring tar.gz handoff URL
+`https://api.anthropic.com/v1/design/h/<id>?open_file=…` still works with `--handoff` if a user
+ever produces one, but Export stopped offering it.)
+
+**Build from the ZIP** (GNU `tar` in Git Bash can't read zip — use PowerShell to unpack, then
+feed the extracted `project/` dir to `build.mjs --src`):
+
+```sh
+# 1. unpack (PowerShell — bsdtar/GNU tar won't autodetect zip here):
+powershell -c "Expand-Archive -LiteralPath 'version/<name>-handoff.zip' -DestinationPath .work/zip-extract -Force"
+# 2. process the extracted bundle (pin the version you want; build.mjs finds the project/ dir):
+node build.mjs --src ".work/zip-extract/<slug>/project" --version "SpatialTimber Deck vN.html"
+```
+
+`build.mjs`'s `findProjectDir()` walks the tree for the dir holding `deck-stage.js` + a
+`SpatialTimber Deck v*.html`, so pointing `--src` at the extract root also works. The `.zip`
+itself can be deleted after a successful build (it's huge; `version/` is git-ignored scratch).
 
 ## The build pipeline — `build.mjs`
 
@@ -39,6 +68,10 @@ node build.mjs --handoff "<expiring url>"
 # process an already-downloaded tarball or extracted dir instead:
 node build.mjs --tarball .work/handoff.tar.gz
 node build.mjs --src <extracted-dir>
+
+# from a Download-ZIP handoff in version/ (current canonical route — see "Getting a new deck" above):
+powershell -c "Expand-Archive -LiteralPath 'version/<name>-handoff.zip' -DestinationPath .work/zip-extract -Force"
+node build.mjs --src ".work/zip-extract/<slug>/project" --version "SpatialTimber Deck vN.html"
 
 # pin a specific version (default = highest vN):
 node build.mjs --handoff "<url>" --version "SpatialTimber Deck v15.html"
@@ -132,6 +165,7 @@ patch-assets/      committed assets injected by processing steps (click-driven s
 build.mjs          fetch → process → publish pipeline (incl. SVG_SWAPS manifest)
 .nojekyll          serve files verbatim on Pages
 .work/             (git-ignored) downloaded/extracted handoff scratch
+version/           (git-ignored) Download-ZIP handoff bundles the user drops in (~300 MB each)
 project-docs/      (git-ignored junction) → OneDrive "SpatialTimber - Documents"
 ```
 

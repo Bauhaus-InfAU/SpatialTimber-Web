@@ -12,5 +12,9 @@ Thumbs.db
 # Build pipeline scratch (downloaded/extracted handoff)
 .work/
 
+# Download-ZIP handoff bundles the user drops here (~300 MB each; re-download from Claude
+# Design when needed). Extract with Expand-Archive, build with --src, then delete.
+version/
+
 # Standalone single-file export (large; generated on demand via make-standalone.mjs, share directly)
 SpatialTimber-Deck-*-standalone.html
