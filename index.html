@@ -645,8 +645,22 @@
   }
   .s29-row{flex-direction:row;align-items:center;}
   .s29-mark{width:96px;height:96px;}
-  .s29-divider::before{content:"";position:absolute;left:0;top:0;bottom:0;width:1px;background:var(--ink);transform-origin:top;}
+  .s29-divider::before{content:"";position:absolute;left:-65px;top:0;bottom:0;width:1px;background:var(--ink);transform-origin:top;}
   @keyframes s29-line{from{transform:scaleY(0);}to{transform:scaleY(1);}}
+  /* Last-slide QR swap: advancing past the thank-you slide cross-fades the
+     SpatialTimber identity + funding note (the block left of the divider line)
+     into a contact QR code sized to match the divider line's height. */
+  .s29-fade{transition:opacity .45s ease;}
+  /* Zone spans from the left edge to the divider line: the left column's own
+     width plus the 130px column-gap (right:-130px reaches the divider). */
+  .s29-qr{position:absolute;top:0;bottom:0;left:0;right:-130px;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .45s ease;}
+  .s29-qr img{display:block;box-sizing:border-box;height:var(--s29-qr-size,360px);width:var(--s29-qr-size,360px);background:#fbf9f5;border:1px solid var(--ink);border-radius:var(--radius-card);padding:22px;}
+  .s29-qr a{display:block;cursor:pointer;}
+  /* !important kills the s29-rise entrance animation, whose fill:both otherwise
+     pins the funding note's opacity in the cascade's animation tier (which beats
+     a normal opacity:0). With the animation gone, opacity:0 fades it out. */
+  section[data-label="29 Thank you"][data-qr="on"] .s29-fade{opacity:0;pointer-events:none;animation:none !important;}
+  section[data-label="29 Thank you"][data-qr="on"] .s29-qr{opacity:1;pointer-events:auto;}
   @media (prefers-reduced-motion: no-preference){
     section[data-label="29 Thank you"][data-deck-active] .s29-rise{animation:ty-rise .7s cubic-bezier(.2,.8,.25,1) both;}
     section[data-label="29 Thank you"][data-deck-active] [data-om-id="b61726ec:1073"]{animation-delay:1.35s;}
@@ -657,10 +671,10 @@
     section[data-label="29 Thank you"][data-deck-active] [data-om-id="b61726ec:1072"]{animation-delay:2.3s;}
   }
 </style>
-  <meta name="deck-version" content="v33">
+  <meta name="deck-version" content="v35">
   <meta name="web-version" content="1.6.0">
-  <meta name="deck-source" content="SpatialTimber Deck v33.html">
-  <meta name="deck-built" content="2026-06-19T13:25:54.177Z">
+  <meta name="deck-source" content="SpatialTimber Deck v35.html">
+  <meta name="deck-built" content="2026-06-21T15:11:31.919Z">
   <link rel="stylesheet" href="fonts.css">
   <style id="om-bullet-fix">/* font-independent eyebrow bullet — Söhne "●" fallback fix */
   .acc.om-acc-dot{display:inline-block;width:.6em;height:.6em;border-radius:50%;background:var(--accent);color:transparent;vertical-align:.02em;overflow:hidden;line-height:0;}</style>
@@ -2368,13 +2382,14 @@ We know how to build this.</p>
 
 <!-- =================== 33 THANK YOU =================== -->
 <section data-label="29 Thank you" data-om-id="b61726ec:1047" data-screen-label="29 29 Thank you" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="28" data-deck-last-visible="">
-  <div class="frame" style="padding-top:120px; padding-bottom:120px; display:grid; grid-template-columns:1.05fr 1fr; column-gap:130px; align-items:center;" data-om-id="b61726ec:1048">
-    <div style="display:flex; flex-direction:column; justify-content:center; gap:48px;" data-om-id="b61726ec:1049">
-      <div class="ty-identity s29-row" style="flex-direction:row; align-items:center; gap:30px;" data-om-id="b61726ec:1050">
+  <div class="frame" style="padding-top:120px; padding-bottom:120px; display:grid; grid-template-columns:1fr 1fr; column-gap:130px; align-items:center;" data-om-id="b61726ec:1048">
+    <div class="s29-left" style="display:flex; flex-direction:column; justify-content:center; gap:48px; position:relative;" data-om-id="b61726ec:1049">
+      <div class="ty-identity s29-row s29-fade" style="flex-direction:row; align-items:center; gap:30px;" data-om-id="b61726ec:1050">
         <div class="ty-mark s29-mark" data-ty-mark="" data-om-id="b61726ec:1051"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SpatialTimber logomark"><title>SpatialTimber</title><g class="ty-slab ty-slab-0"><polygon points="50,49 75,61 50,73 25,61" fill="#FBFAF6"></polygon><polygon points="25,61 50,73 50,79 25,67" fill="#D9D4C8"></polygon><polygon points="50,73 75,61 75,67 50,79" fill="#ECE8DD"></polygon><path d="M 25 61 L 50 73 M 75 61 L 50 73 M 50 73 L 50 79" fill="none" stroke="#141413" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"></path><path d="M 50 49 L 75 61 L 75 67 L 50 79 L 25 67 L 25 61 Z" fill="none" stroke="#141413" stroke-width="3.8" stroke-linejoin="round" stroke-linecap="round"></path></g><g class="ty-slab ty-slab-1"><polygon points="50,35 75,47 50,59 25,47" fill="#FBFAF6"></polygon><polygon points="25,47 50,59 50,65 25,53" fill="#D9D4C8"></polygon><polygon points="50,59 75,47 75,53 50,65" fill="#ECE8DD"></polygon><path d="M 25 47 L 50 59 M 75 47 L 50 59 M 50 59 L 50 65" fill="none" stroke="#141413" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"></path><path d="M 50 35 L 75 47 L 75 53 L 50 65 L 25 53 L 25 47 Z" fill="none" stroke="#141413" stroke-width="3.8" stroke-linejoin="round" stroke-linecap="round"></path></g><g class="ty-slab ty-slab-2"><polygon points="50,21 75,33 50,45 25,33" fill="#D97757"></polygon><polygon points="25,33 50,45 50,51 25,39" fill="#B85A3C"></polygon><polygon points="50,45 75,33 75,39 50,51" fill="#CC6A49"></polygon><path d="M 25 33 L 50 45 M 75 33 L 50 45 M 50 45 L 50 51" fill="none" stroke="#141413" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"></path><path d="M 50 21 L 75 33 L 75 39 L 50 51 L 25 39 L 25 33 Z" fill="none" stroke="#141413" stroke-width="3.8" stroke-linejoin="round" stroke-linecap="round"></path></g></svg></div>
         <div class="ty-wordmark" data-om-id="b61726ec:1052"><span class="s-spatial" data-om-id="978cbabb:1446">Spatial</span><span class="s-timber" data-om-id="978cbabb:1447">Timber</span></div>
       </div>
-      <p class="small mute s29-rise" style="margin:0; font-style:italic; max-width:760px; line-height:1.5;" data-om-id="b61726ec:1073">Gefördert vom Bundesinstitut für Bau-, Stadt- und Raumforschung (BBSR) im Auftrag des BMWSB aus Mitteln der Zukunft Bau Forschungsförderung.<br>Förderzeitraum: Oktober 2024 – September 2026.</p>
+      <p class="small mute s29-rise s29-fade" style="margin:0; font-style:italic; max-width:760px; line-height:1.5;" data-om-id="b61726ec:1073">Gefördert vom Bundesinstitut für Bau-, Stadt- und Raumforschung (BBSR) im Auftrag des BMWSB aus Mitteln der Zukunft Bau Forschungsförderung.<br>Förderzeitraum: Oktober 2024 – September 2026.</p>
+      <div class="s29-qr" data-om-id="b61726ec:1077"><a href="mailto:martin.bielik@uni-weimar.de" aria-label="Email Dr. Martin Bielik" data-om-id="b61726ec:1078"><img src="assets/contact_qr_bielik.svg" alt="Contact QR code" style="width: 41px; height: 414px; padding: 0px; border-style: solid; background-color: rgb(251, 249, 245); border-width: 1px; border-color: rgb(21, 21, 19)"></a></div>
     </div>
 
     <div class="s29-divider" style="position:relative; padding-left:120px; display:flex; flex-direction:column; gap:48px;" data-om-id="b61726ec:1065">
@@ -2555,6 +2570,76 @@ We know how to build this.</p>
         var slide = e.detail && e.detail.slide;
         if (slide !== getSlide28()) reset();
       });
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', wire);
+    } else {
+      wire();
+    }
+  })();
+</script>
+
+<script>
+  // Slide 29 (Thank you) — final advance swaps the SpatialTimber identity +
+  // funding note (the block left of the divider line) for a contact QR code,
+  // sized to match the divider line's height. A forward gesture (→ / Space /
+  // PageDown, forward tap-zone, or overlay Next) on the last slide shows the
+  // QR instead of doing nothing; a back gesture (← / PageUp, back tap-zone,
+  // or overlay Prev) while the QR is up hides it instead of leaving the slide.
+  (function () {
+    function getSlide29() {
+      var q = document.querySelector('.s29-qr');
+      return q ? q.closest('section') : null;
+    }
+    function isActive() {
+      var s = getSlide29();
+      return s && s.hasAttribute('data-deck-active');
+    }
+    function isShown() {
+      var s = getSlide29();
+      return s && s.getAttribute('data-qr') === 'on';
+    }
+    function sizeQR() {
+      var s = getSlide29();
+      if (!s) return;
+      var divider = s.querySelector('.s29-divider');
+      if (divider) s.style.setProperty('--s29-qr-size', Math.round(divider.offsetHeight) + 'px');
+    }
+    function show() { var s = getSlide29(); if (s) { sizeQR(); s.setAttribute('data-qr', 'on'); } }
+    function hide() { var s = getSlide29(); if (s) s.setAttribute('data-qr', 'off'); }
+
+    // Forward gesture (capture phase, before deck-stage) → show QR.
+    window.addEventListener('keydown', function (e) {
+      if (e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return;
+      var k = e.key;
+      if (!isActive()) return;
+      var forward = (k === 'ArrowRight' || k === 'PageDown' || k === ' ' || k === 'Spacebar');
+      var back = (k === 'ArrowLeft' || k === 'PageUp');
+      if (forward && !isShown()) { e.stopPropagation(); e.preventDefault(); show(); }
+      else if (back && isShown()) { e.stopPropagation(); e.preventDefault(); hide(); }
+    }, true);
+
+    // Overlay Next / forward tap-zone → show; overlay Prev / back tap-zone → hide.
+    window.addEventListener('click', function (e) {
+      if (!isActive()) return;
+      var path = (e.composedPath && e.composedPath()) || [];
+      var hits = function (cls) {
+        return path.some(function (n) { return n && n.classList && n.classList.contains(cls); });
+      };
+      var forward = hits('next') || hits('tapzone--fwd');
+      var back = hits('prev') || hits('tapzone--back');
+      if (forward && !isShown()) { e.stopPropagation(); e.preventDefault(); show(); }
+      else if (back && isShown()) { e.stopPropagation(); e.preventDefault(); hide(); }
+    }, true);
+
+    function wire() {
+      var stage = document.querySelector('deck-stage');
+      if (!stage) return;
+      // Reset the QR whenever the last slide isn't the active one.
+      stage.addEventListener('slidechange', function () {
+        if (!isActive()) hide();
+      });
+      window.addEventListener('resize', function () { if (isShown()) sizeQR(); });
     }
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', wire);
