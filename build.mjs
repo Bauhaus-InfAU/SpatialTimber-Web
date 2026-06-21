@@ -31,7 +31,10 @@ const WORK = join(ROOT, ".work");
 // BUMP THIS when you change anything in this repo's processing/patch layer:
 //   patch (x.x.+1) = fix/tweak to an existing patch; minor (x.+1.0) = new processing step /
 //   feature; major (+1.0.0) = a reworking. The deck's own vN is tracked separately.
-const WEB_VERSION = "1.7.0";
+// 1.7.0 briefly carried a `qr-fix` step that stripped a garbled inline style from the
+// closing-slide contact-QR <img> (a stale-bundle artifact). The bug was corrected at the
+// Claude Design source, so the step was removed — patch layer is back to the 1.6.0 state.
+const WEB_VERSION = "1.6.0";
 const ASSETS = join(ROOT, "assets");
 const PATCH_ASSETS = join(ROOT, "patch-assets");   // committed assets injected by processing steps (survive every re-fetch)
 const FONT_LINK = '<link rel="stylesheet" href="fonts.css">';
@@ -221,19 +224,6 @@ function applyProcessing(html, meta) {
   const beforeDots = html;
   html = html.replace(/(<span\b[^>]*\bclass=")acc("[^>]*>)(\s*(?:●|&#9679;)\s*)(<\/span>)/g, "$1acc om-acc-dot$2$3$4");
   if (html !== beforeDots) applied.push("bullet-fix:tag");
-  // qr-fix: the closing-slide contact-QR <img> carries a garbled inline style from the editor
-  // (a drag-resize artifact, e.g. width:41px;height:414px;padding:0) that OVERRIDES the deck's
-  // own `.s29-qr img` rule — which already sizes it as a square var(--s29-qr-size,360px) with the
-  // right padding/border/radius/background. The override squashes the QR into a thin vertical
-  // strip. Fix is to strip that inline style attribute so the stylesheet governs (restores the
-  // authored square). Keyed on the QR asset; idempotent (once the style attr is gone it no longer
-  // matches). A deck that no longer references the QR img → warning, not fatal.
-  const QR_IMG_RE = /(<img\s+src="assets\/contact_qr_bielik\.svg"[^>]*?)\s+style="[^"]*"([^>]*>)/;
-  if (html.includes('assets/contact_qr_bielik.svg')) {
-    if (QR_IMG_RE.test(html)) { html = html.replace(QR_IMG_RE, "$1$2"); applied.push("qr-fix"); }
-  } else {
-    warnings.push("qr-fix: deck no longer references assets/contact_qr_bielik.svg — step skipped (deck changed?)");
-  }
   // --- future UI patches go here (kept as discrete, idempotent steps) ---
   return { html, applied, warnings };
 }

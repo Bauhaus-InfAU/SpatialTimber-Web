@@ -94,13 +94,14 @@ node build.mjs --reprocess --publish "Update deck to v16"
    vs ~0.7em) and the dots look shrunken. This step tags the round-bullet `.acc` spans
    (`om-acc-dot`) and injects a `<style>` that draws each dot as a **CSS disc sized in em** —
    font-independent, identical on every machine. The lone `✓` eyebrow is left untouched.
-6. **qr-fix** — the closing-slide contact-QR `<img>` (`assets/contact_qr_bielik.svg`) ships with a
-   garbled inline `style` from the editor (a drag-resize artifact, e.g. `width:41px;height:414px`)
-   that **overrides** the deck's own `.s29-qr img` rule (a square `var(--s29-qr-size,360px)` with the
-   right padding/border/radius). The override squashes the QR into a thin vertical strip. This step
-   **strips that inline `style` attribute** so the stylesheet governs and the QR renders square.
-   Idempotent (keyed on the QR asset; no-op once the attribute is gone). Added deck v35 / web 1.7.0.
-7. *(future UI patches go here as discrete, idempotent steps.)*
+6. *(future UI patches go here as discrete, idempotent steps.)*
+
+> **Removed step — `qr-fix` (web 1.7.0, deck v35, then reverted):** the v35 *source* shipped a
+> garbled inline `style` on the closing-slide contact-QR `<img>` (`width:41px;height:414px`) that
+> overrode the `.s29-qr img` square rule and squashed it into a strip. A temporary `qr-fix` step
+> stripped that inline style. The bug was then corrected **at the Claude Design source**, so the
+> step was removed and `WEB_VERSION` returned to `1.6.0`. If a stale pre-fix bundle is ever rebuilt
+> the strip will reappear — re-export rather than re-adding the workaround.
 
 `build.mjs` re-applies all of these on every `--handoff`/`--reprocess` run, so a new version
 (v16, v17, …) is fetched and shipped with fonts + nav-toggle + the SVG swaps already in place —
