@@ -1,8 +1,8 @@
 {
   "deckVersion": "v35",
-  "webVersion": "1.6.0",
+  "webVersion": "1.7.0",
   "sourceFile": "SpatialTimber Deck v35.html",
-  "builtAt": "2026-06-21T15:11:31.919Z",
+  "builtAt": "2026-06-21T15:15:31.853Z",
   "slides": 29,
   "assets": 49,
   "processing": [
@@ -13,6 +13,7 @@
     "svg-swap:scheme_lora_annotated.svg",
     "svg-swap:scheme_typology_annotated.svg",
     "bullet-fix:style",
-    "bullet-fix:tag"
+    "bullet-fix:tag",
+    "qr-fix"
   ]
 }
